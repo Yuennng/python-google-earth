@@ -19,17 +19,17 @@ def extract_google_earth_kml(folder_path):
     
     for root, dirs, file in os.walk(folder_path): # walk through directory tree
         for f in file:
-            if '.kml' in f:
+            if '.kml' in f: # only read kml files
                 with open(root + "/" + f) as data:
                     kml_soup = BeautifulSoup(data, 'lxml-xml') # Parse as XML
                     
-                out = kml_soup.find_all('Placemark')
-                for o in out:
+                out = kml_soup.find_all('Placemark') 
+                for o in out: # iterate & extract data from each Google Earth Pro placemark
                     area_name.extend([o.find('name').text])
                     longlong, latlat, _ = o.find('coordinates').text.split(",")
                     long.extend([longlong])
                     lat.extend([latlat])
                     addr.extend([o.find('address').text])
-                    link.extend([Soup(o.find('description').text,'html.parser').find('script').text.split('"')[1]])
+                    link.extend([BeautifulSoup(o.find('description').text,'html.parser').find('script').text.split('"')[1]])
 
     return area_name, long, lat, addr, link
